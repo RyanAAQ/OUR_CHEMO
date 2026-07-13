@@ -11,8 +11,8 @@ public class DispensedDrugsImpl implements DispensedDrugsRepository {
 
     @Override
     public DispensedDrugs save(DispensedDrugs dispensedDrugs) {
+        dispensedDrugs.setId(++count);
         dispensedDrugsList.add(dispensedDrugs);
-        count++;
         return dispensedDrugs;
     }
 

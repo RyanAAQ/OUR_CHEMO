@@ -9,4 +9,5 @@ public interface UserRepository {
     void deleteAll();
     long count();
     User findById(long id);
+    int size();
 }

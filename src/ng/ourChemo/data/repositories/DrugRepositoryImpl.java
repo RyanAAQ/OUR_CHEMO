@@ -11,8 +11,8 @@ public class DrugRepositoryImpl implements DrugRepository {
 
     @Override
     public Drug save(Drug drug) {
+        drug.setId(++count);
         drugs.add(drug);
-        count++;
         return drug;
     }
 
@@ -38,5 +38,10 @@ public class DrugRepositoryImpl implements DrugRepository {
             if (drug.getId() == id) return drug;
         }
         return null;
+    }
+
+    @Override
+    public int size() {
+        return drugs.size();
     }
 }

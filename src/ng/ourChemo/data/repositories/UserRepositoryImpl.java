@@ -11,8 +11,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
+        user.setId(++count);
         users.add(user);
-        count++;
         return user;
     }
 
@@ -38,5 +38,10 @@ public class UserRepositoryImpl implements UserRepository {
             if (user.getId() == id) return user;
         }
         return null;
+    }
+
+    @Override
+    public int size() {
+        return users.size();
     }
 }
