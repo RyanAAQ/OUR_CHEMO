@@ -2,6 +2,9 @@ package ng.ourChemo.data.models;
 
 public class User {
     private String username;
+    private String password;
+    private int id;
+    private String fullName;
 
     public String getUsername() {
         return username;
@@ -35,7 +38,4 @@ public class User {
         this.fullName = fullName;
     }
 
-    private String password;
-    private int id;
-    private String fullName;
 }

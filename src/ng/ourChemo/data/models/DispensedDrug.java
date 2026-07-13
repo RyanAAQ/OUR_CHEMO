@@ -3,6 +3,8 @@ package ng.ourChemo.data.models;
 public class DispensedDrug {
     private int id;
     private Drug drug;
+    private int quantity;
+    private int totalPrice;
 
     public int getId() {
         return id;
@@ -35,7 +37,4 @@ public class DispensedDrug {
     public void setTotalPrice(int totalPrice) {
         this.totalPrice = totalPrice;
     }
-
-    private int quantity;
-    private int totalPrice;
 }
