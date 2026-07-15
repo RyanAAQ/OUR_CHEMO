@@ -60,7 +60,15 @@ class DrugRepositoryTest {
         drugRepository.save(new Drug());
         drugRepository.save(new Drug());
         drugRepository.deleteAll();
-        assertEquals(0, drugRepository.size());
+        assertEquals(0, drugRepository.count());
+    }
+
+    @Test
+    void deleteAllThenSaveStartsCountFromOne() {
+        drugRepository.save(new Drug());
+        drugRepository.deleteAll();
+        drugRepository.save(new Drug());
+        assertEquals(1, drugRepository.count());
     }
 
     @Test

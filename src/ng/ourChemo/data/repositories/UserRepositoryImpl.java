@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepositoryImpl implements UserRepository {
-    private int count;
-    private List<User> users = new ArrayList<>();
+    private static int count;
+    private static List<User> users = new ArrayList<>();
 
     @Override
     public User save(User user) {
@@ -30,12 +30,21 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void deleteAll() {
         users.clear();
+        count = 0;
     }
 
     @Override
     public User findById(long id) {
         for (User user : users) {
             if (user.getId() == id) return user;
+        }
+        return null;
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        for (User user : users) {
+            if (user.getUsername().equals(username)) return user;
         }
         return null;
     }

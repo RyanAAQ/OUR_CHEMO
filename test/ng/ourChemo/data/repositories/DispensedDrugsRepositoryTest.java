@@ -1,3 +1,4 @@
+
 package ng.ourChemo.data.repositories;
 
 import ng.ourChemo.data.models.DispensedDrugs;
@@ -33,7 +34,7 @@ class DispensedDrugsRepositoryTest {
     }
 
     @Test
-    void saveTwoAndTheIdIsTrackedCorrectly() {
+    void saveTwoRecordsIdsIncrementCorrectly() {
         DispensedDrugs first = dispensedDrugsRepository.save(new DispensedDrugs());
         DispensedDrugs second = dispensedDrugsRepository.save(new DispensedDrugs());
         assertEquals(1, first.getId());

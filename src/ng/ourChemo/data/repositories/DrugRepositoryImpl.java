@@ -30,6 +30,7 @@ public class DrugRepositoryImpl implements DrugRepository {
     @Override
     public void deleteAll() {
         drugs.clear();
+        count = 0;
     }
 
     @Override

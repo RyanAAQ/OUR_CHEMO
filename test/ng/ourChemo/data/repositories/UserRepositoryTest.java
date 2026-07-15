@@ -60,7 +60,15 @@ class UserRepositoryTest {
         userRepository.save(new User());
         userRepository.save(new User());
         userRepository.deleteAll();
-        assertEquals(0, userRepository.size());
+        assertEquals(0, userRepository.count());
+    }
+
+    @Test
+    void deleteAllThenSaveStartsCountFromOne() {
+        userRepository.save(new User());
+        userRepository.deleteAll();
+        User user = userRepository.save(new User());
+        assertEquals(1, userRepository.count());
     }
 
     @Test
@@ -73,5 +81,20 @@ class UserRepositoryTest {
     @Test
     void findByIdReturnsNullWhenNotFound() {
         assertNull(userRepository.findById(99));
+    }
+
+    @Test
+    void findByUsernameReturnsCorrectUser() {
+        User user = new User();
+        user.setUsername("john");
+        userRepository.save(user);
+        User found = userRepository.findByUsername("john");
+        assertNotNull(found);
+        assertEquals("john", found.getUsername());
+    }
+
+    @Test
+    void findByUsernameReturnsNullWhenNotFound() {
+        assertNull(userRepository.findByUsername("nobody"));
     }
 }
