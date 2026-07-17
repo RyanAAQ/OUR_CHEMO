@@ -35,7 +35,7 @@ public class DrugRepositoryImpl implements DrugRepository {
 
     @Override
     public Drug findById(long id) {
-        for (Drug drug : drugs) {
+        for (var drug : drugs) {
             if (drug.getId() == id) return drug;
         }
         return null;

@@ -13,6 +13,7 @@ class UserRepositoryTest {
     @BeforeEach
     void setUp() {
         userRepository = new UserRepositoryImpl();
+        userRepository.deleteAll();
     }
 
     @Test

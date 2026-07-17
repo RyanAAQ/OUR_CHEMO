@@ -1,9 +1,8 @@
 package ng.ourChemo.dtos.requests;
 
-public class RegisterUserRequest {
+public class UserLoginRequest {
     private  String username;
     private String password;
-    private String fullName;
 
     public String getUsername() {
         return username;
@@ -21,10 +20,4 @@ public class RegisterUserRequest {
         this.password = password;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {this.fullName = fullName;
-    }
 }

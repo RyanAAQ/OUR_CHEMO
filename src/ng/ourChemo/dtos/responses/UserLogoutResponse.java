@@ -1,8 +1,8 @@
 package ng.ourChemo.dtos.responses;
 
-public class RegisterUserResponses {
+public class UserLogoutResponse {
     private String username;
-    private String fullName;
+    private boolean isLoggedIn;
 
     public String getUsername() {
         return username;
@@ -12,11 +12,11 @@ public class RegisterUserResponses {
         this.username = username;
     }
 
-    public String getFullName() {
-        return fullName;
+    public boolean isLoggedIn() {
+        return isLoggedIn;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setLoggedIn(boolean loggedIn) {
+        isLoggedIn = loggedIn;
     }
 }
