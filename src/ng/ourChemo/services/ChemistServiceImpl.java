@@ -53,26 +53,26 @@ public class ChemistServiceImpl implements ChemistService {
             throw new IllegalArgumentException("Update request cannot be null");
         }
 
-        Drug existing = drugRepository.findById(request.getId());
-        if (existing == null) {
+        Drug savedDrug = drugRepository.findById(request.getId());
+        if (savedDrug == null) {
             throw new IllegalArgumentException("Drug with id " + request.getId() + " not found");
         }
 
         if (request.getName() != null && !request.getName().isEmpty()) {
-            existing.setName(request.getName());
+            savedDrug.setName(request.getName());
         }
         if (request.getBrand() != null && !request.getBrand().isEmpty()) {
-            existing.setBrand(request.getBrand());
+            savedDrug.setBrand(request.getBrand());
         }
         if (request.getPrice() > 0) {
-            existing.setPrice(request.getPrice());
+            savedDrug.setPrice(request.getPrice());
         }
 
         UpdateDrugResponse response = new UpdateDrugResponse();
-        response.setId(existing.getId());
-        response.setName(existing.getName());
-        response.setBrand(existing.getBrand());
-        response.setPrice(existing.getPrice());
+        response.setId(savedDrug.getId());
+        response.setName(savedDrug.getName());
+        response.setBrand(savedDrug.getBrand());
+        response.setPrice(savedDrug.getPrice());
         response.setMessage("Drug updated successfully");
         return response;
     }

@@ -33,9 +33,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserLoginResponse login(UserLoginRequest request) {
         User user = userRepository.findByUsername(request.getUsername());
-        if (request == null) {
-            throw new IllegalArgumentException("Login request is null");
-        }
+        if (request == null) throw new IllegalArgumentException("Login request is null");
+
         if (request.getUsername() == null || request.getPassword() == null || request.getUsername().isEmpty() || request.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Username or password is null or empty");
         }
@@ -45,11 +44,11 @@ public class AuthServiceImpl implements AuthService {
         if (!user.getPassword().equals(request.getPassword())) {
             throw new IllegalArgumentException("Incorrect password");
         }
+        userRepository.save(user);
         user.setLoggedIn(true);
         UserLoginResponse response = new UserLoginResponse();
         response.setUsername(request.getUsername());
         response.setLoggedIn(true);
-        userRepository.save(user);
         return response;
     }
 
