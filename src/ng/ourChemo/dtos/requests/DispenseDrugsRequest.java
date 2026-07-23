@@ -1,17 +1,17 @@
 package ng.ourChemo.dtos.requests;
 
-import ng.ourChemo.data.models.DispensedDrugs;
+import ng.ourChemo.data.models.DispensedDrug;
 
 import java.util.List;
 
 public class DispenseDrugsRequest {
-    private List<DispensedDrugs> dispenses;
+    private List<DispensedDrug> items;
 
-    public List<DispensedDrugs> getDispenses() {
-        return dispenses;
+    public List<DispensedDrug> getItems() {
+        return items;
     }
 
-    public void setDispenses(List<DispensedDrugs> dispenses) {
-        this.dispenses = dispenses;
+    public void setItems(List<DispensedDrug> items) {
+        this.items = items;
     }
 }

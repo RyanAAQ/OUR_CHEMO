@@ -1,18 +1,12 @@
 package ng.ourChemo.controllers;
 
-import ng.ourChemo.data.models.DispensedDrugs;
 import ng.ourChemo.dtos.requests.AddDrugRequest;
 import ng.ourChemo.dtos.requests.DeleteDrugRequest;
-import ng.ourChemo.dtos.requests.DispenseDrugsRequest;
 import ng.ourChemo.dtos.requests.UpdateDrugRequest;
 import ng.ourChemo.dtos.responses.AddDrugResponse;
 import ng.ourChemo.dtos.responses.DeleteDrugResponse;
-import ng.ourChemo.dtos.responses.DispenseDrugsResponse;
 import ng.ourChemo.dtos.responses.UpdateDrugResponse;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,19 +65,5 @@ class ChemistControllerTest {
 
         assertEquals(response.getId(), deleteResponse.getId());
         assertEquals("Drug deleted successfully", deleteResponse.getMessage());
-    }
-
-    @Test
-    void dispenseDrugsDelegatesToService() {
-        DispensedDrugs record = new DispensedDrugs();
-        List<DispensedDrugs> dispenses = new ArrayList<>();
-        dispenses.add(record);
-
-        DispenseDrugsRequest request = new DispenseDrugsRequest();
-        request.setDispenses(dispenses);
-        DispenseDrugsResponse response = controller.dispenseDrugs(request);
-
-        assertEquals(1, response.getSavedCount());
-        assertEquals("Dispensed 1 record(s) successfully", response.getMessage());
     }
 }

@@ -13,53 +13,72 @@ import ng.ourChemo.utils.Mapper;
 
 public class AuthServiceImpl implements AuthService {
 
-    private final UserRepository userRepository = new UserRepositoryImpl();
+    private final UserRepository userRepository;
+
+    public AuthServiceImpl() {
+        this(new UserRepositoryImpl());
+    }
+
+    public AuthServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public RegisterUserResponse registerChemist(RegisterUserRequest request) {
+        if (request.getFullName() == null || request.getFullName().isEmpty())
+            throw new IllegalArgumentException("Full name is required");
+        if (request.getUsername() == null || request.getUsername().isEmpty())
+            throw new IllegalArgumentException("Username is required");
+        if (request.getPassword() == null || request.getPassword().isEmpty())
+            throw new IllegalArgumentException("Password is required");
+
         request.setUsername(request.getUsername().toLowerCase());
-        User user = userRepository.findByUsername(request.getUsername());
-        if (user != null) {
+
+        if (userRepository.findByUsername(request.getUsername()) != null)
             throw new IllegalArgumentException("Username " + request.getUsername() + " already exists");
-        }
-        Mapper.verify(request);
+
         userRepository.save(Mapper.mapToUser(request));
+
         RegisterUserResponse response = new RegisterUserResponse();
-        response.setFullName(request.getFullName());
         response.setUsername(request.getUsername());
+        response.setFullName(request.getFullName());
         return response;
     }
 
     @Override
     public UserLoginResponse login(UserLoginRequest request) {
-        User user = userRepository.findByUsername(request.getUsername());
-        if (request == null) throw new IllegalArgumentException("Login request is null");
+        if (request.getUsername() == null || request.getUsername().isEmpty())
+            throw new IllegalArgumentException("Username is required");
+        if (request.getPassword() == null || request.getPassword().isEmpty())
+            throw new IllegalArgumentException("Password is required");
 
-        if (request.getUsername() == null || request.getPassword() == null || request.getUsername().isEmpty() || request.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("Username or password is null or empty");
-        }
-        if (user == null) {
-            throw new IllegalArgumentException("User with username " + request.getUsername() + " does not exist");
-        }
-        if (!user.getPassword().equals(request.getPassword())) {
+        String username = request.getUsername().toLowerCase();
+        User user = userRepository.findByUsername(username);
+        if (user == null)
+            throw new IllegalArgumentException("User with username " + username + " does not exist");
+        if (!user.getPassword().equals(request.getPassword()))
             throw new IllegalArgumentException("Incorrect password");
-        }
-        userRepository.save(user);
+
         user.setLoggedIn(true);
+
         UserLoginResponse response = new UserLoginResponse();
-        response.setUsername(request.getUsername());
+        response.setUsername(username);
         response.setLoggedIn(true);
         return response;
     }
 
-
     @Override
     public UserLogoutResponse logout(UserLogoutRequest request) {
-        User user = userRepository.findByUsername(request.getUsername());
-        if (user == null) {
+        if (request.getUsername() == null || request.getUsername().isEmpty())
+            throw new IllegalArgumentException("Username is required");
+
+        String username = request.getUsername().toLowerCase();
+        User user = userRepository.findByUsername(username);
+        if (user == null)
             throw new IllegalArgumentException("User not found");
-        }
+
         user.setLoggedIn(false);
+
         UserLogoutResponse response = new UserLogoutResponse();
         response.setUsername(user.getUsername());
         response.setLoggedIn(false);

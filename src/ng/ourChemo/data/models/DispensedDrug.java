@@ -2,9 +2,18 @@ package ng.ourChemo.data.models;
 
 public class DispensedDrug {
     private int id;
+    private int batchId;
     private Drug drug;
     private int quantity;
     private int totalPrice;
+
+    public int getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(int batchId) {
+        this.batchId = batchId;
+    }
 
     public int getId() {
         return id;

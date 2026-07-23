@@ -1,14 +1,30 @@
 package ng.ourChemo.data.models;
 
-import java.time.LocalDate;
+import java.util.List;
 
 public class Drug {
     private int price;
     private String name;
+    private List<Batch> batches;
     private int id;
-    private LocalDate expiryDate;
+    private int quantity;
     private String brand;
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public List<Batch> getBatches() {
+        return batches;
+    }
+
+    public void setBatches(List<Batch> batches) {
+        this.batches = batches;
+    }
 
     public int getPrice() {
         return price;
@@ -32,14 +48,6 @@ public class Drug {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
     }
 
     public String getBrand() {

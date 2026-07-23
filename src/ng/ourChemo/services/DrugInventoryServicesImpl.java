@@ -1,11 +1,14 @@
 package ng.ourChemo.services;
 
-import ng.ourChemo.data.models.DispensedDrugs;
+import ng.ourChemo.data.models.Batch;
+import ng.ourChemo.data.models.DispensedDrug;
 import ng.ourChemo.data.models.Drug;
 import ng.ourChemo.data.repositories.DispensedDrugsImpl;
 import ng.ourChemo.data.repositories.DispensedDrugsRepository;
 import ng.ourChemo.data.repositories.DrugRepository;
 import ng.ourChemo.data.repositories.DrugRepositoryImpl;
+import ng.ourChemo.data.repositories.UserRepository;
+import ng.ourChemo.data.repositories.UserRepositoryImpl;
 import ng.ourChemo.dtos.requests.AddDrugRequest;
 import ng.ourChemo.dtos.requests.DeleteDrugRequest;
 import ng.ourChemo.dtos.requests.DispenseDrugsRequest;
@@ -15,12 +18,14 @@ import ng.ourChemo.dtos.responses.DeleteDrugResponse;
 import ng.ourChemo.dtos.responses.DispenseDrugsResponse;
 import ng.ourChemo.dtos.responses.UpdateDrugResponse;
 import ng.ourChemo.utils.Mapper;
-
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ChemistServiceImpl implements ChemistService {
+public class DrugInventoryServicesImpl implements DrugInventoryServices {
     private final DrugRepository drugRepository = new DrugRepositoryImpl();
     private final DispensedDrugsRepository dispensedDrugsRepository = new DispensedDrugsImpl();
+    private final UserRepository userRepository = new UserRepositoryImpl();
 
     @Override
     public AddDrugResponse addDrug(AddDrugRequest request) {
@@ -37,12 +42,37 @@ public class ChemistServiceImpl implements ChemistService {
             throw new IllegalArgumentException("Drug price must be greater than zero");
         }
 
-        Drug savedDrug = drugRepository.save(Mapper.mapToDrug(request));
+        Drug drugToSave = Mapper.mapToDrug(request);
+        Drug existingDrug = drugRepository.findByName(request.getName());
+        if (existingDrug != null && existingDrug.getBrand() != null && existingDrug.getBrand().equalsIgnoreCase(request.getBrand())) {
+            drugToSave = existingDrug;
+        }
+
+        if (request.getPurchaseQuantity() > 0) {
+            List<Batch> batches = drugToSave.getBatches();
+            if (batches == null) {
+                batches = new ArrayList<>();
+                drugToSave.setBatches(batches);
+            }
+
+            Batch batch = new Batch();
+            batch.setId(batches.size() + 1);
+            batch.setPurchaseQuantity(request.getPurchaseQuantity());
+            batch.setQuantityLeft(request.getPurchaseQuantity());
+            batch.setPurchaseDate(LocalDate.now());
+            batch.setExpiryDate(request.getExpiryDate());
+            batches.add(batch);
+            drugToSave.setQuantity(drugToSave.getQuantity() + request.getPurchaseQuantity());
+        }
+
+        Drug savedDrug = drugRepository.save(drugToSave);
         AddDrugResponse response = new AddDrugResponse();
         response.setId(savedDrug.getId());
         response.setName(savedDrug.getName());
         response.setBrand(savedDrug.getBrand());
         response.setPrice(savedDrug.getPrice());
+        response.setDrugBatch(savedDrug.getBatches());
+        response.setTotalDrugs((int) drugRepository.count());
         response.setMessage("Drug added successfully");
         return response;
     }
@@ -98,17 +128,16 @@ public class ChemistServiceImpl implements ChemistService {
         if (request == null) {
             throw new IllegalArgumentException("Dispense request cannot be null");
         }
-        List<DispensedDrugs> dispenses = request.getDispenses();
+        List<DispensedDrug> dispenses = request.getItems();
         if (dispenses == null || dispenses.isEmpty()) {
             throw new IllegalArgumentException("Dispensed drug list cannot be empty");
         }
 
         int savedCount = 0;
-        for (DispensedDrugs dispense : dispenses) {
+        for (DispensedDrug dispense : dispenses) {
             if (dispense == null) {
                 throw new IllegalArgumentException("Dispensed drug entry cannot be null");
             }
-            dispensedDrugsRepository.save(dispense);
             savedCount++;
         }
         DispenseDrugsResponse response = new DispenseDrugsResponse();

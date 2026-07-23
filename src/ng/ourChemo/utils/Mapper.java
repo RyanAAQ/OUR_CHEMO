@@ -15,24 +15,11 @@ public class Mapper {
         return user;
     }
 
-    public static Drug mapToDrug(AddDrugRequest  request) {
+    public static Drug mapToDrug(AddDrugRequest request) {
         Drug drug = new Drug();
-        drug.setId(request.getId());
-        drug.setPrice(request.getPrice());
         drug.setName(request.getName());
+        drug.setPrice(request.getPrice());
         drug.setBrand(request.getBrand());
         return drug;
-
-    }
-    public static void verify(RegisterUserRequest request){
-        if(request.getFullName() == null || request.getFullName().isEmpty()) {
-            throw  new IllegalArgumentException("Full name is required");
-        }
-        if(request.getUsername() == null || request.getUsername().isEmpty()) {
-        throw  new IllegalArgumentException("Username is required");
-        }
-        if(request.getPassword() == null || request.getPassword().isEmpty()) {
-            throw  new IllegalArgumentException("Password is required");
-        }
     }
 }

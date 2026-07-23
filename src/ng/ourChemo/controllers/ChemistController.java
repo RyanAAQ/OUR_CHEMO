@@ -8,12 +8,12 @@ import ng.ourChemo.dtos.responses.AddDrugResponse;
 import ng.ourChemo.dtos.responses.DeleteDrugResponse;
 import ng.ourChemo.dtos.responses.DispenseDrugsResponse;
 import ng.ourChemo.dtos.responses.UpdateDrugResponse;
-import ng.ourChemo.services.ChemistService;
-import ng.ourChemo.services.ChemistServiceImpl;
+import ng.ourChemo.services.DrugInventoryServices;
+import ng.ourChemo.services.DrugInventoryServicesImpl;
 
 public class ChemistController {
 
-    private final ChemistService chemistService = new ChemistServiceImpl();
+    private final DrugInventoryServices chemistService = new DrugInventoryServicesImpl();
 
     public AddDrugResponse addDrug(AddDrugRequest request) {
         return chemistService.addDrug(request);

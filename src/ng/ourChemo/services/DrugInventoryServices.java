@@ -1,6 +1,5 @@
 package ng.ourChemo.services;
 
-import ng.ourChemo.data.models.DispensedDrugs;
 import ng.ourChemo.dtos.requests.AddDrugRequest;
 import ng.ourChemo.dtos.requests.DeleteDrugRequest;
 import ng.ourChemo.dtos.requests.DispenseDrugsRequest;
@@ -10,9 +9,7 @@ import ng.ourChemo.dtos.responses.DeleteDrugResponse;
 import ng.ourChemo.dtos.responses.DispenseDrugsResponse;
 import ng.ourChemo.dtos.responses.UpdateDrugResponse;
 
-import java.util.List;
-
-public interface ChemistService {
+public interface DrugInventoryServices {
 
     AddDrugResponse addDrug(AddDrugRequest request);
     UpdateDrugResponse updateDrug(UpdateDrugRequest request);

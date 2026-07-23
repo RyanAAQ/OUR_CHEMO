@@ -22,7 +22,7 @@ class AuthServiceImplTest {
     @BeforeEach
     void setUp() {
         user = new UserRepositoryImpl();
-        authService = new AuthServiceImpl();
+        authService = new AuthServiceImpl(user);
         request = new RegisterUserRequest();
         user.deleteAll();
     }

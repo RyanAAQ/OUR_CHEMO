@@ -9,5 +9,6 @@ public interface DrugRepository {
     void deleteAll();
     long count();
     Drug findById(long id);
+    Drug findByName(String name);
     int size();
 }
