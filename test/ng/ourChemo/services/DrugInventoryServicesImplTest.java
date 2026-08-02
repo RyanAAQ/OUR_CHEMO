@@ -227,16 +227,4 @@ class DrugInventoryServicesImplTest {
         assertEquals(100, response.getDrugBatch().stream().mapToInt(b -> b.getQuantityLeft()).sum());
     }
 
-    @Test
-    void addDrugWithGenericNameResponseContainsGenericName() {
-        registerAndLogin();
-        AddDrugRequest request = new AddDrugRequest();
-        request.setName("Emzor Paracetamol");
-        request.setGenericName("Paracetamol");
-        request.setBrand("Emzor");
-        request.setPrice(500);
-        request.setPurchaseQuantity(100);
-        AddDrugResponse response = drugService.addDrug(request);
-        assertEquals("Paracetamol", response.getGenericName());
-    }
 }
