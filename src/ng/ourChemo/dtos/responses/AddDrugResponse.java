@@ -11,6 +11,7 @@ public class AddDrugResponse {
     private int price;
     private List<Batch> drugBatch;
     private int totalDrugs;
+    private int totalQuantity;
     private String message;
 
     public int getId() {
@@ -59,6 +60,14 @@ public class AddDrugResponse {
 
     public void setTotalDrugs(int totalDrugs) {
         this.totalDrugs = totalDrugs;
+    }
+
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(int totalQuantity) {
+        this.totalQuantity = totalQuantity;
     }
 
     public String getMessage() {

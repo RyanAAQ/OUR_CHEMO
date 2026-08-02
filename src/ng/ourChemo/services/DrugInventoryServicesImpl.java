@@ -73,6 +73,7 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
         response.setPrice(savedDrug.getPrice());
         response.setDrugBatch(savedDrug.getBatches());
         response.setTotalDrugs((int) drugRepository.count());
+        response.setTotalQuantity(savedDrug.getQuantity());
         response.setMessage("Drug added successfully");
         return response;
     }
@@ -126,7 +127,7 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
     @Override
     public DispenseDrugsResponse dispenseDrugs(DispenseDrugsRequest request) {
         if (request == null) {
-            throw new IllegalArgumentException("Dispense request cannot be null");
+            throw new IllegalArgumentException("Dispdense request cannot be null");
         }
         List<DispensedDrug> dispenses = request.getItems();
         if (dispenses == null || dispenses.isEmpty()) {
