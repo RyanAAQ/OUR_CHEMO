@@ -4,6 +4,9 @@ import java.time.YearMonth;
 
 public class AddDrugRequest {
     private String name;
+    private String genericName;
+    private String strength;
+    private String dosageForm;
     private String brand;
     private int price;
     private int purchaseQuantity;
@@ -15,6 +18,30 @@ public class AddDrugRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getStrength() {
+        return strength;
+    }
+
+    public void setStrength(String strength) {
+        this.strength = strength;
+    }
+
+    public String getDosageForm() {
+        return dosageForm;
+    }
+
+    public void setDosageForm(String dosageForm) {
+        this.dosageForm = dosageForm;
+    }
+
+    public String getGenericName() {
+        return genericName;
+    }
+
+    public void setGenericName(String genericName) {
+        this.genericName = genericName;
     }
 
     public String getBrand() {

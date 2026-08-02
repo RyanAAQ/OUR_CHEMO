@@ -184,8 +184,7 @@ class DrugInventoryServicesImplTest {
     }
 
     @Test
-    void twoChemistsAddSameDrugAndBrandResultsInOneDrugTwoBatchesAndCombinedQuantity() {
-        registerAndLogin();
+    void twoChemistsAddSameDrugAndBrandResultsInOneDrugTwoBatchesAndCombinedQuantity() {        registerAndLogin();
         AddDrugRequest first = new AddDrugRequest();
         first.setName("Paracetamol");
         first.setBrand("Emzor");
@@ -214,5 +213,30 @@ class DrugInventoryServicesImplTest {
         assertEquals(1, response.getTotalDrugs());
         assertEquals(2, response.getDrugBatch().size());
         assertEquals(150, response.getTotalQuantity());
+    }
+
+    @Test
+    void afterAddingDrugBatchQuantityLeftMatchesPurchaseQuantity() {
+        registerAndLogin();
+        AddDrugRequest request = new AddDrugRequest();
+        request.setName("Paracetamol");
+        request.setBrand("Emzor");
+        request.setPrice(500);
+        request.setPurchaseQuantity(100);
+        AddDrugResponse response = drugService.addDrug(request);
+        assertEquals(100, response.getDrugBatch().stream().mapToInt(b -> b.getQuantityLeft()).sum());
+    }
+
+    @Test
+    void addDrugWithGenericNameResponseContainsGenericName() {
+        registerAndLogin();
+        AddDrugRequest request = new AddDrugRequest();
+        request.setName("Emzor Paracetamol");
+        request.setGenericName("Paracetamol");
+        request.setBrand("Emzor");
+        request.setPrice(500);
+        request.setPurchaseQuantity(100);
+        AddDrugResponse response = drugService.addDrug(request);
+        assertEquals("Paracetamol", response.getGenericName());
     }
 }

@@ -75,6 +75,20 @@ public class DrugRepositoryImpl implements DrugRepository {
     }
 
     @Override
+    public List<Drug> search(String query) {
+        List<Drug> results = new ArrayList<>();
+        if (query == null || query.isEmpty()) return results;
+        String q = query.trim().toLowerCase();
+        for (Drug drug : drugs) {
+            boolean matchesName = drug.getName() != null && drug.getName().toLowerCase().contains(q);
+            boolean matchesGeneric = drug.getGenericName() != null && drug.getGenericName().toLowerCase().contains(q);
+            boolean matchesBrand = drug.getBrand() != null && drug.getBrand().toLowerCase().contains(q);
+            if (matchesName || matchesGeneric || matchesBrand) results.add(drug);
+        }
+        return results;
+    }
+
+    @Override
     public int size() {
         return drugs.size();
     }

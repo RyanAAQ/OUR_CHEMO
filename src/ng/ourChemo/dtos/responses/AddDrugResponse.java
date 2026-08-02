@@ -7,6 +7,7 @@ import java.util.List;
 public class AddDrugResponse {
     private int id;
     private String name;
+    private String genericName;
     private String brand;
     private int price;
     private List<Batch> drugBatch;
@@ -28,6 +29,14 @@ public class AddDrugResponse {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getGenericName() {
+        return genericName;
+    }
+
+    public void setGenericName(String genericName) {
+        this.genericName = genericName;
     }
 
     public String getBrand() {

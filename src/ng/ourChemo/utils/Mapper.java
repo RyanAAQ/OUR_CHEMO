@@ -18,6 +18,9 @@ public class Mapper {
     public static Drug mapToDrug(AddDrugRequest request) {
         Drug drug = new Drug();
         drug.setName(request.getName());
+        drug.setGenericName(request.getGenericName());
+        drug.setStrength(request.getStrength());
+        drug.setDosageForm(request.getDosageForm());
         drug.setPrice(request.getPrice());
         drug.setBrand(request.getBrand());
         return drug;

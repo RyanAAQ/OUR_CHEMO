@@ -3,10 +3,12 @@ package ng.ourChemo.controllers;
 import ng.ourChemo.dtos.requests.AddDrugRequest;
 import ng.ourChemo.dtos.requests.DeleteDrugRequest;
 import ng.ourChemo.dtos.requests.DispenseDrugsRequest;
+import ng.ourChemo.dtos.requests.SearchDrugRequest;
 import ng.ourChemo.dtos.requests.UpdateDrugRequest;
 import ng.ourChemo.dtos.responses.AddDrugResponse;
 import ng.ourChemo.dtos.responses.DeleteDrugResponse;
 import ng.ourChemo.dtos.responses.DispenseDrugsResponse;
+import ng.ourChemo.dtos.responses.SearchDrugResponse;
 import ng.ourChemo.dtos.responses.UpdateDrugResponse;
 import ng.ourChemo.services.DrugInventoryServices;
 import ng.ourChemo.services.DrugInventoryServicesImpl;
@@ -29,5 +31,9 @@ public class ChemistController {
 
     public DispenseDrugsResponse dispenseDrugs(DispenseDrugsRequest request) {
         return chemistService.dispenseDrugs(request);
+    }
+
+    public SearchDrugResponse searchDrug(SearchDrugRequest request) {
+        return chemistService.searchDrug(request);
     }
 }

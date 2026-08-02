@@ -16,10 +16,12 @@ import ng.ourChemo.data.repositories.UserRepositoryImpl;
 import ng.ourChemo.dtos.requests.AddDrugRequest;
 import ng.ourChemo.dtos.requests.DeleteDrugRequest;
 import ng.ourChemo.dtos.requests.DispenseDrugsRequest;
+import ng.ourChemo.dtos.requests.SearchDrugRequest;
 import ng.ourChemo.dtos.requests.UpdateDrugRequest;
 import ng.ourChemo.dtos.responses.AddDrugResponse;
 import ng.ourChemo.dtos.responses.DeleteDrugResponse;
 import ng.ourChemo.dtos.responses.DispenseDrugsResponse;
+import ng.ourChemo.dtos.responses.SearchDrugResponse;
 import ng.ourChemo.dtos.responses.UpdateDrugResponse;
 import ng.ourChemo.utils.Mapper;
 
@@ -77,6 +79,7 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
         AddDrugResponse response = new AddDrugResponse();
         response.setId(savedDrug.getId());
         response.setName(savedDrug.getName());
+        response.setGenericName(savedDrug.getGenericName());
         response.setBrand(savedDrug.getBrand());
         response.setPrice(savedDrug.getPrice());
         response.setDrugBatch(savedDrug.getBatches());
@@ -155,13 +158,12 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
             if (drug == null)
                 throw new IllegalArgumentException("Drug with id " + item.getDrug().getId() + " not found");
             if (drug.getQuantity() < item.getQuantity())
-                throw new IllegalArgumentException("Insufficient stock for " + drug.getName() +
-                        ". Available: " + drug.getQuantity() + ", Requested: " + item.getQuantity());
+                throw new IllegalArgumentException("Insufficient stock");
 
             Batch batch = null;
-            for (Batch b : batchRepository.findByDrugId(drug.getId())) {
-                if (b.getId() == item.getBatchId()) {
-                    batch = b;
+            for (Batch batch2 : batchRepository.findByDrugId(drug.getId())) {
+                if (batch2.getId() == item.getBatchId()) {
+                    batch = batch2;
                     break;
                 }
             }
@@ -187,6 +189,15 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
         response.setSavedCount(items.size());
         response.setTotalAmount(totalAmount);
         response.setMessage("Dispensed " + items.size() + " item(s) successfully. Total: " + totalAmount);
+        return response;
+    }
+
+    @Override
+    public SearchDrugResponse searchDrug(SearchDrugRequest request) {
+        if (request == null || request.getQuery() == null || request.getQuery().isEmpty())
+            throw new IllegalArgumentException("Search query is required");
+        SearchDrugResponse response = new SearchDrugResponse();
+        response.setDrugs(drugRepository.search(request.getQuery()));
         return response;
     }
 }
