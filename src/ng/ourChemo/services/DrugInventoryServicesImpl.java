@@ -2,7 +2,11 @@ package ng.ourChemo.services;
 
 import ng.ourChemo.data.models.Batch;
 import ng.ourChemo.data.models.DispensedDrug;
+import ng.ourChemo.data.models.DispensedDrugs;
 import ng.ourChemo.data.models.Drug;
+import ng.ourChemo.data.models.User;
+import ng.ourChemo.data.repositories.BatchRepository;
+import ng.ourChemo.data.repositories.BatchRepositoryImpl;
 import ng.ourChemo.data.repositories.DispensedDrugsImpl;
 import ng.ourChemo.data.repositories.DispensedDrugsRepository;
 import ng.ourChemo.data.repositories.DrugRepository;
@@ -18,54 +22,58 @@ import ng.ourChemo.dtos.responses.DeleteDrugResponse;
 import ng.ourChemo.dtos.responses.DispenseDrugsResponse;
 import ng.ourChemo.dtos.responses.UpdateDrugResponse;
 import ng.ourChemo.utils.Mapper;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DrugInventoryServicesImpl implements DrugInventoryServices {
     private final DrugRepository drugRepository = new DrugRepositoryImpl();
+    private final BatchRepository batchRepository = new BatchRepositoryImpl();
     private final DispensedDrugsRepository dispensedDrugsRepository = new DispensedDrugsImpl();
     private final UserRepository userRepository = new UserRepositoryImpl();
 
     @Override
     public AddDrugResponse addDrug(AddDrugRequest request) {
-        if (request == null) {
+        if (request == null)
             throw new IllegalArgumentException("Add drug request cannot be null");
-        }
-        if (request.getName() == null || request.getName().isEmpty()) {
+        if (request.getName() == null || request.getName().isEmpty())
             throw new IllegalArgumentException("Drug name is required");
-        }
-        if (request.getBrand() == null || request.getBrand().isEmpty()) {
+        if (request.getBrand() == null || request.getBrand().isEmpty())
             throw new IllegalArgumentException("Drug brand is required");
-        }
-        if (request.getPrice() <= 0) {
+        if (request.getPrice() <= 0)
             throw new IllegalArgumentException("Drug price must be greater than zero");
-        }
 
         Drug drugToSave = Mapper.mapToDrug(request);
         Drug existingDrug = drugRepository.findByName(request.getName());
-        if (existingDrug != null && existingDrug.getBrand() != null && existingDrug.getBrand().equalsIgnoreCase(request.getBrand())) {
+        if (existingDrug != null && existingDrug.getBrand() != null &&
+                existingDrug.getBrand().equalsIgnoreCase(request.getBrand())) {
             drugToSave = existingDrug;
         }
 
-        if (request.getPurchaseQuantity() > 0) {
-            List<Batch> batches = drugToSave.getBatches();
-            if (batches == null) {
-                batches = new ArrayList<>();
-                drugToSave.setBatches(batches);
-            }
+        Drug savedDrug = drugRepository.save(drugToSave);
 
+        if (request.getPurchaseQuantity() > 0) {
             Batch batch = new Batch();
-            batch.setId(batches.size() + 1);
+            batch.setDrugId(savedDrug.getId());
             batch.setPurchaseQuantity(request.getPurchaseQuantity());
             batch.setQuantityLeft(request.getPurchaseQuantity());
             batch.setPurchaseDate(LocalDate.now());
             batch.setExpiryDate(request.getExpiryDate());
+            batchRepository.save(batch);
+
+            savedDrug.setQuantity(savedDrug.getQuantity() + request.getPurchaseQuantity());
+
+            List<Batch> batches = savedDrug.getBatches();
+            if (batches == null) {
+                batches = new ArrayList<>();
+                savedDrug.setBatches(batches);
+            }
             batches.add(batch);
-            drugToSave.setQuantity(drugToSave.getQuantity() + request.getPurchaseQuantity());
+            drugRepository.save(savedDrug);
         }
 
-        Drug savedDrug = drugRepository.save(drugToSave);
         AddDrugResponse response = new AddDrugResponse();
         response.setId(savedDrug.getId());
         response.setName(savedDrug.getName());
@@ -80,24 +88,19 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
 
     @Override
     public UpdateDrugResponse updateDrug(UpdateDrugRequest request) {
-        if (request == null) {
+        if (request == null)
             throw new IllegalArgumentException("Update request cannot be null");
-        }
 
         Drug savedDrug = drugRepository.findById(request.getId());
-        if (savedDrug == null) {
+        if (savedDrug == null)
             throw new IllegalArgumentException("Drug with id " + request.getId() + " not found");
-        }
 
-        if (request.getName() != null && !request.getName().isEmpty()) {
+        if (request.getName() != null && !request.getName().isEmpty())
             savedDrug.setName(request.getName());
-        }
-        if (request.getBrand() != null && !request.getBrand().isEmpty()) {
+        if (request.getBrand() != null && !request.getBrand().isEmpty())
             savedDrug.setBrand(request.getBrand());
-        }
-        if (request.getPrice() > 0) {
+        if (request.getPrice() > 0)
             savedDrug.setPrice(request.getPrice());
-        }
 
         UpdateDrugResponse response = new UpdateDrugResponse();
         response.setId(savedDrug.getId());
@@ -110,14 +113,15 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
 
     @Override
     public DeleteDrugResponse deleteDrug(DeleteDrugRequest request) {
-        if (request == null) {
+        if (request == null)
             throw new IllegalArgumentException("Delete drug request cannot be null");
-        }
+
         Drug drug = drugRepository.findById(request.getId());
-        if (drug == null) {
+        if (drug == null)
             throw new IllegalArgumentException("Drug with id " + request.getId() + " not found");
-        }
+
         drugRepository.delete(drug);
+
         DeleteDrugResponse response = new DeleteDrugResponse();
         response.setId(request.getId());
         response.setMessage("Drug deleted successfully");
@@ -126,24 +130,63 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
 
     @Override
     public DispenseDrugsResponse dispenseDrugs(DispenseDrugsRequest request) {
-        if (request == null) {
-            throw new IllegalArgumentException("Dispdense request cannot be null");
-        }
-        List<DispensedDrug> dispenses = request.getItems();
-        if (dispenses == null || dispenses.isEmpty()) {
+        if (request == null)
+            throw new IllegalArgumentException("Dispense request cannot be null");
+        if (request.getUsername() == null || request.getUsername().isEmpty())
+            throw new IllegalArgumentException("Username is required");
+
+        User user = userRepository.findByUsername(request.getUsername());
+        if (user == null)
+            throw new IllegalArgumentException("User not found");
+        if (!user.isLoggedIn())
+            throw new IllegalArgumentException("User is not logged in");
+
+        List<DispensedDrug> items = request.getItems();
+        if (items == null || items.isEmpty())
             throw new IllegalArgumentException("Dispensed drug list cannot be empty");
+
+        int totalAmount = 0;
+
+        for (DispensedDrug item : items) {
+            if (item == null)
+                throw new IllegalArgumentException("Dispensed drug entry cannot be null");
+
+            Drug drug = drugRepository.findById(item.getDrug().getId());
+            if (drug == null)
+                throw new IllegalArgumentException("Drug with id " + item.getDrug().getId() + " not found");
+            if (drug.getQuantity() < item.getQuantity())
+                throw new IllegalArgumentException("Insufficient stock for " + drug.getName() +
+                        ". Available: " + drug.getQuantity() + ", Requested: " + item.getQuantity());
+
+            Batch batch = null;
+            for (Batch b : batchRepository.findByDrugId(drug.getId())) {
+                if (b.getId() == item.getBatchId()) {
+                    batch = b;
+                    break;
+                }
+            }
+            if (batch != null) {
+                batch.setQuantityLeft(batch.getQuantityLeft() - item.getQuantity());
+                batchRepository.save(batch);
+            }
+
+            item.setTotalPrice(item.getQuantity() * drug.getPrice());
+            totalAmount += item.getTotalPrice();
+
+            drug.setQuantity(drug.getQuantity() - item.getQuantity());
+            drugRepository.save(drug);
         }
 
-        int savedCount = 0;
-        for (DispensedDrug dispense : dispenses) {
-            if (dispense == null) {
-                throw new IllegalArgumentException("Dispensed drug entry cannot be null");
-            }
-            savedCount++;
-        }
+        DispensedDrugs record = new DispensedDrugs();
+        record.setDispensedDrugs(items);
+        record.setSaleDateTime(LocalDateTime.now());
+        record.setDispenseBy(user);
+        dispensedDrugsRepository.save(record);
+
         DispenseDrugsResponse response = new DispenseDrugsResponse();
-        response.setSavedCount(savedCount);
-        response.setMessage("Dispensed " + savedCount + " record(s) successfully");
+        response.setSavedCount(items.size());
+        response.setTotalAmount(totalAmount);
+        response.setMessage("Dispensed " + items.size() + " item(s) successfully. Total: " + totalAmount);
         return response;
     }
 }
