@@ -194,10 +194,10 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
 
     @Override
     public SearchDrugResponse searchDrug(SearchDrugRequest request) {
-        if (request == null || request.getQuery() == null || request.getQuery().isEmpty())
+        if (request == null || request.getWord() == null || request.getWord().isEmpty())
             throw new IllegalArgumentException("Search query is required");
         SearchDrugResponse response = new SearchDrugResponse();
-        response.setDrugs(drugRepository.search(request.getQuery()));
+        response.setDrugs(drugRepository.search(request.getWord()));
         return response;
     }
 }

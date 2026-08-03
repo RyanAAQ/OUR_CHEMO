@@ -1,13 +1,13 @@
 package ng.ourChemo.dtos.requests;
 
 public class SearchDrugRequest {
-    private String query;
+    private String word;
 
-    public String getQuery() {
-        return query;
+    public String getWord() {
+        return word;
     }
 
-    public void setQuery(String query) {
-        this.query = query;
+    public void setWord(String word) {
+        this.word = word;
     }
 }

@@ -1,9 +1,8 @@
 package ng.ourChemo.services;
 
-import ng.ourChemo.dtos.requests.AddDrugRequest;
-import ng.ourChemo.dtos.requests.RegisterUserRequest;
-import ng.ourChemo.dtos.requests.UserLoginRequest;
+import ng.ourChemo.dtos.requests.*;
 import ng.ourChemo.dtos.responses.AddDrugResponse;
+import ng.ourChemo.dtos.responses.SearchDrugResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -109,6 +108,17 @@ class DrugInventoryServicesImplTest {
     }
 
     @Test
+    void addDrugWithNullBrandThrowsException() {
+        registerAndLogin();
+        AddDrugRequest request = new AddDrugRequest();
+        request.setName("Paracetamol");
+        request.setBrand(null);
+        request.setPrice(500);
+        request.setPurchaseQuantity(100);
+        assertThrows(IllegalArgumentException.class, () -> drugService.addDrug(request));
+    }
+
+    @Test
     void addDrugWithZeroPriceThrowsException() {
         registerAndLogin();
         AddDrugRequest request = new AddDrugRequest();
@@ -130,6 +140,81 @@ class DrugInventoryServicesImplTest {
         AddDrugResponse response = drugService.addDrug(request);
         assertEquals("Amoxicillin", response.getName());
         assertEquals("GSK", response.getBrand());
+    }
+
+    @Test
+    void updateDrugWithNullRequestThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> drugService.updateDrug(null));
+    }
+
+    @Test
+    void updateDrugWithNonExistentIdThrowsException() {
+        registerAndLogin();
+        UpdateDrugRequest request = new UpdateDrugRequest();
+        request.setId(999);
+        request.setName("Ibuprofen");
+        assertThrows(IllegalArgumentException.class, () -> drugService.updateDrug(request));
+    }
+
+    @Test
+    void deleteDrugWithNullRequestThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> drugService.deleteDrug(null));
+    }
+
+    @Test
+    void deleteDrugWithNonExistentIdThrowsException() {
+        registerAndLogin();
+        DeleteDrugRequest request = new DeleteDrugRequest();
+        request.setId(999);
+        assertThrows(IllegalArgumentException.class, () -> drugService.deleteDrug(request));
+    }
+
+    @Test
+    void dispenseWithNullRequestThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(null));
+    }
+
+    @Test
+    void dispenseWithNullUsernameThrowsException() {
+        DispenseDrugsRequest request = new DispenseDrugsRequest();
+        request.setUsername(null);
+        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(request));
+    }
+
+    @Test
+    void dispenseWithNonExistentUserThrowsException() {
+        DispenseDrugsRequest request = new DispenseDrugsRequest();
+        request.setUsername("nobody");
+        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(request));
+    }
+
+    @Test
+    void dispenseWithUserNotLoggedInThrowsException() {
+        register();
+        DispenseDrugsRequest request = new DispenseDrugsRequest();
+        request.setUsername("johndoe");
+        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(request));
+    }
+
+    @Test
+    void dispenseWithEmptyItemsThrowsException() {
+        registerAndLogin();
+        DispenseDrugsRequest request = new DispenseDrugsRequest();
+        request.setUsername("johndoe");
+        request.setItems(new java.util.ArrayList<>());
+        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(request));
+    }
+
+    @Test
+    void searchWithNullRequestThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> drugService.searchDrug(null));
+    }
+
+    @Test
+    void searchWithEmptyQueryThrowsException() {
+        SearchDrugRequest request = new SearchDrugRequest();
+        request.setWord("");
+        assertThrows(IllegalArgumentException.class, () -> drugService.searchDrug(request));
     }
 
     @Test
@@ -213,5 +298,25 @@ class DrugInventoryServicesImplTest {
         assertEquals(1, response.getTotalDrugs());
         assertEquals(2, response.getDrugBatch().size());
         assertEquals(150, response.getTotalQuantity());
+    }
+
+    @Test
+    void searchGenericNameOfDrugReturnsTheCorrectDrugName() {
+        registerAndLogin();
+        AddDrugRequest request = new AddDrugRequest();
+        request.setName("Emzor Paracetamol");
+        request.setGenericName("Paracetamol");
+        request.setBrand("Emzor");
+        request.setPrice(500);
+        request.setPurchaseQuantity(100);
+        drugService.addDrug(request);
+
+        SearchDrugRequest searchRequest = new SearchDrugRequest();
+        searchRequest.setWord("Kara");
+        searchRequest.setWord("Para");
+        SearchDrugResponse response = drugService.searchDrug(searchRequest);
+
+        assertEquals(1, response.getDrugs().size());
+        assertEquals("Paracetamol", response.getDrugs().getFirst().getGenericName());
     }
 }
