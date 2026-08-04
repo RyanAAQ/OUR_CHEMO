@@ -9,7 +9,7 @@ public class AddDrugResponse {
     private String name;
     private String genericName;
     private String brand;
-    private int price;
+    private int unitPrice;
     private List<Batch> drugBatch;
     private int totalDrugs;
     private int totalQuantity;
@@ -47,12 +47,12 @@ public class AddDrugResponse {
         this.brand = brand;
     }
 
-    public int getPrice() {
-        return price;
+    public int getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setUnitPrice(int unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
     public List<Batch> getDrugBatch() {

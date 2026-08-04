@@ -21,7 +21,7 @@ public class Mapper {
         drug.setGenericName(request.getGenericName());
         drug.setStrength(request.getStrength());
         drug.setDosageForm(request.getDosageForm());
-        drug.setPrice(request.getPrice());
+        drug.setUnitPrice(request.getUnitPrice());
         drug.setBrand(request.getBrand());
         return drug;
     }

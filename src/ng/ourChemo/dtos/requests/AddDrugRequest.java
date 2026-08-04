@@ -8,7 +8,8 @@ public class AddDrugRequest {
     private String strength;
     private String dosageForm;
     private String brand;
-    private int price;
+    private int unitPrice;
+    private int costPrice;
     private int purchaseQuantity;
     private YearMonth expiryDate;
 
@@ -52,12 +53,20 @@ public class AddDrugRequest {
         this.brand = brand;
     }
 
-    public int getPrice() {
-        return price;
+    public int getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setUnitPrice(int unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public int getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(int costPrice) {
+        this.costPrice = costPrice;
     }
 
     public int getPurchaseQuantity() {

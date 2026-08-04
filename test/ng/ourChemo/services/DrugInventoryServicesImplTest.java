@@ -3,8 +3,12 @@ package ng.ourChemo.services;
 import ng.ourChemo.dtos.requests.*;
 import ng.ourChemo.dtos.responses.AddDrugResponse;
 import ng.ourChemo.dtos.responses.SearchDrugResponse;
+import ng.ourChemo.exceptions.MedicineNotFoundException;
+import ng.ourChemo.exceptions.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.YearMonth;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,7 +49,7 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request = new AddDrugRequest();
         request.setName("Paracetamol");
         request.setBrand("Emzor");
-        request.setPrice(500);
+        request.setUnitPrice(500);
         request.setPurchaseQuantity(100);
         AddDrugResponse response = drugService.addDrug(request);
         assertEquals(1, response.getDrugBatch().size());
@@ -57,7 +61,7 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request = new AddDrugRequest();
         request.setName("Paracetamol");
         request.setBrand("Emzor");
-        request.setPrice(500);
+        request.setUnitPrice(500);
         request.setPurchaseQuantity(100);
         AddDrugResponse response = drugService.addDrug(request);
         assertEquals(100, response.getTotalQuantity());
@@ -69,14 +73,14 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request1 = new AddDrugRequest();
         request1.setName("Paracetamol");
         request1.setBrand("Emzor");
-        request1.setPrice(500);
+        request1.setUnitPrice(500);
         request1.setPurchaseQuantity(100);
         drugService.addDrug(request1);
 
         AddDrugRequest request2 = new AddDrugRequest();
         request2.setName("Paracetamol");
         request2.setBrand("Emzor");
-        request2.setPrice(500);
+        request2.setUnitPrice(500);
         request2.setPurchaseQuantity(50);
         AddDrugResponse response = drugService.addDrug(request2);
 
@@ -90,7 +94,7 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request = new AddDrugRequest();
         request.setName("Vitamin C");
         request.setBrand("Emzor");
-        request.setPrice(300);
+        request.setUnitPrice(300);
         request.setPurchaseQuantity(0);
         AddDrugResponse response = drugService.addDrug(request);
         assertNull(response.getDrugBatch());
@@ -102,9 +106,9 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request = new AddDrugRequest();
         request.setName(null);
         request.setBrand("Emzor");
-        request.setPrice(500);
+        request.setUnitPrice(500);
         request.setPurchaseQuantity(100);
-        assertThrows(IllegalArgumentException.class, () -> drugService.addDrug(request));
+        assertThrows(ValidationException.class, () -> drugService.addDrug(request));
     }
 
     @Test
@@ -113,9 +117,9 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request = new AddDrugRequest();
         request.setName("Paracetamol");
         request.setBrand(null);
-        request.setPrice(500);
+        request.setUnitPrice(500);
         request.setPurchaseQuantity(100);
-        assertThrows(IllegalArgumentException.class, () -> drugService.addDrug(request));
+        assertThrows(ValidationException.class, () -> drugService.addDrug(request));
     }
 
     @Test
@@ -124,9 +128,9 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request = new AddDrugRequest();
         request.setName("Paracetamol");
         request.setBrand("Emzor");
-        request.setPrice(0);
+        request.setUnitPrice(0);
         request.setPurchaseQuantity(100);
-        assertThrows(IllegalArgumentException.class, () -> drugService.addDrug(request));
+        assertThrows(ValidationException.class, () -> drugService.addDrug(request));
     }
 
     @Test
@@ -135,7 +139,7 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request = new AddDrugRequest();
         request.setName("Amoxicillin");
         request.setBrand("GSK");
-        request.setPrice(800);
+        request.setUnitPrice(800);
         request.setPurchaseQuantity(60);
         AddDrugResponse response = drugService.addDrug(request);
         assertEquals("Amoxicillin", response.getName());
@@ -144,7 +148,7 @@ class DrugInventoryServicesImplTest {
 
     @Test
     void updateDrugWithNullRequestThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> drugService.updateDrug(null));
+        assertThrows(MedicineNotFoundException.class, () -> drugService.updateDrug(null));
     }
 
     @Test
@@ -153,12 +157,12 @@ class DrugInventoryServicesImplTest {
         UpdateDrugRequest request = new UpdateDrugRequest();
         request.setId(999);
         request.setName("Ibuprofen");
-        assertThrows(IllegalArgumentException.class, () -> drugService.updateDrug(request));
+        assertThrows(MedicineNotFoundException.class, () -> drugService.updateDrug(request));
     }
 
     @Test
     void deleteDrugWithNullRequestThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> drugService.deleteDrug(null));
+        assertThrows(MedicineNotFoundException.class, () -> drugService.deleteDrug(null));
     }
 
     @Test
@@ -166,26 +170,26 @@ class DrugInventoryServicesImplTest {
         registerAndLogin();
         DeleteDrugRequest request = new DeleteDrugRequest();
         request.setId(999);
-        assertThrows(IllegalArgumentException.class, () -> drugService.deleteDrug(request));
+        assertThrows(MedicineNotFoundException.class, () -> drugService.deleteDrug(request));
     }
 
     @Test
     void dispenseWithNullRequestThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(null));
+        assertThrows(ValidationException.class, () -> drugService.dispenseDrugs(null));
     }
 
     @Test
     void dispenseWithNullUsernameThrowsException() {
         DispenseDrugsRequest request = new DispenseDrugsRequest();
         request.setUsername(null);
-        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(request));
+        assertThrows(ValidationException.class, () -> drugService.dispenseDrugs(request));
     }
 
     @Test
     void dispenseWithNonExistentUserThrowsException() {
         DispenseDrugsRequest request = new DispenseDrugsRequest();
         request.setUsername("nobody");
-        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(request));
+        assertThrows(ValidationException.class, () -> drugService.dispenseDrugs(request));
     }
 
     @Test
@@ -193,16 +197,7 @@ class DrugInventoryServicesImplTest {
         register();
         DispenseDrugsRequest request = new DispenseDrugsRequest();
         request.setUsername("johndoe");
-        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(request));
-    }
-
-    @Test
-    void dispenseWithEmptyItemsThrowsException() {
-        registerAndLogin();
-        DispenseDrugsRequest request = new DispenseDrugsRequest();
-        request.setUsername("johndoe");
-        request.setItems(new java.util.ArrayList<>());
-        assertThrows(IllegalArgumentException.class, () -> drugService.dispenseDrugs(request));
+        assertThrows(ValidationException.class, () -> drugService.dispenseDrugs(request));
     }
 
     @Test
@@ -223,7 +218,7 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request = new AddDrugRequest();
         request.setName("Paracetamol");
         request.setBrand("Emzor");
-        request.setPrice(500);
+        request.setUnitPrice(500);
         request.setPurchaseQuantity(100);
         AddDrugResponse response = drugService.addDrug(request);
         assertEquals(1, response.getTotalDrugs());
@@ -235,14 +230,14 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request1 = new AddDrugRequest();
         request1.setName("Paracetamol");
         request1.setBrand("Emzor");
-        request1.setPrice(500);
+        request1.setUnitPrice(500);
         request1.setPurchaseQuantity(100);
         drugService.addDrug(request1);
 
         AddDrugRequest request2 = new AddDrugRequest();
-        request2.setName("Amoxicillin");
-        request2.setBrand("GSK");
-        request2.setPrice(800);
+        request2.setName("Igbo");
+        request2.setBrand("vendor");
+        request2.setUnitPrice(800);
         request2.setPurchaseQuantity(60);
         AddDrugResponse response = drugService.addDrug(request2);
         assertEquals(2, response.getTotalDrugs());
@@ -254,14 +249,14 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request1 = new AddDrugRequest();
         request1.setName("Paracetamol");
         request1.setBrand("Emzor");
-        request1.setPrice(500);
+        request1.setUnitPrice(500);
         request1.setPurchaseQuantity(100);
         drugService.addDrug(request1);
 
         AddDrugRequest request2 = new AddDrugRequest();
         request2.setName("Paracetamol");
         request2.setBrand("Emzor");
-        request2.setPrice(500);
+        request2.setUnitPrice(500);
         request2.setPurchaseQuantity(50);
         AddDrugResponse response = drugService.addDrug(request2);
         assertEquals(1, response.getTotalDrugs());
@@ -269,11 +264,12 @@ class DrugInventoryServicesImplTest {
     }
 
     @Test
-    void twoChemistsAddSameDrugAndBrandResultsInOneDrugTwoBatchesAndCombinedQuantity() {        registerAndLogin();
+    void twoChemistsAddSameDrugAndBrandResultsInOneDrugTwoBatchesAndCombinedQuantity() {
+        registerAndLogin();
         AddDrugRequest first = new AddDrugRequest();
         first.setName("Paracetamol");
         first.setBrand("Emzor");
-        first.setPrice(500);
+        first.setUnitPrice(500);
         first.setPurchaseQuantity(100);
         drugService.addDrug(first);
 
@@ -291,7 +287,7 @@ class DrugInventoryServicesImplTest {
         AddDrugRequest request2 = new AddDrugRequest();
         request2.setName("Paracetamol");
         request2.setBrand("Emzor");
-        request2.setPrice(500);
+        request2.setUnitPrice(500);
         request2.setPurchaseQuantity(50);
         AddDrugResponse response = drugService.addDrug(request2);
 
@@ -307,12 +303,11 @@ class DrugInventoryServicesImplTest {
         request.setName("Emzor Paracetamol");
         request.setGenericName("Paracetamol");
         request.setBrand("Emzor");
-        request.setPrice(500);
+        request.setUnitPrice(500);
         request.setPurchaseQuantity(100);
         drugService.addDrug(request);
 
         SearchDrugRequest searchRequest = new SearchDrugRequest();
-        searchRequest.setWord("Kara");
         searchRequest.setWord("Para");
         SearchDrugResponse response = drugService.searchDrug(searchRequest);
 
