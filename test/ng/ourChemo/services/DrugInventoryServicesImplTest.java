@@ -210,6 +210,7 @@ class DrugInventoryServicesImplTest {
         request.setPurchaseQuantity(60);
         DispenseDrugsRequest request2 = new DispenseDrugsRequest();
         request2.setUsername("johndoe");
+
     }
 
     @Test
