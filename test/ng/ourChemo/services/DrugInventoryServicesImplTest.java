@@ -201,6 +201,18 @@ class DrugInventoryServicesImplTest {
     }
 
     @Test
+    void dispenseCorrectlyReducesTheStock(){
+        registerAndLogin();
+        AddDrugRequest request = new AddDrugRequest();
+        request.setName("Amoxicillin");
+        request.setBrand("GSK");
+        request.setUnitPrice(800);
+        request.setPurchaseQuantity(60);
+        DispenseDrugsRequest request2 = new DispenseDrugsRequest();
+        request2.setUsername("johndoe");
+    }
+
+    @Test
     void searchWithNullRequestThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> drugService.searchDrug(null));
     }

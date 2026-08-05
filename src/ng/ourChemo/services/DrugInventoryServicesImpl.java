@@ -7,7 +7,7 @@ import ng.ourChemo.data.models.Drug;
 import ng.ourChemo.data.models.User;
 import ng.ourChemo.data.repositories.BatchRepository;
 import ng.ourChemo.data.repositories.BatchRepositoryImpl;
-import ng.ourChemo.data.repositories.DispensedDrugsImpl;
+import ng.ourChemo.data.repositories.DispensedDrugRepositoryImpl;
 import ng.ourChemo.data.repositories.DispensedDrugsRepository;
 import ng.ourChemo.data.repositories.DrugRepository;
 import ng.ourChemo.data.repositories.DrugRepositoryImpl;
@@ -37,7 +37,7 @@ import java.util.List;
 public class DrugInventoryServicesImpl implements DrugInventoryServices {
     private final DrugRepository drugRepository = new DrugRepositoryImpl();
     private final BatchRepository batchRepository = new BatchRepositoryImpl();
-    private final DispensedDrugsRepository dispensedDrugsRepository = new DispensedDrugsImpl();
+    private final DispensedDrugsRepository dispensedDrugsRepository = new DispensedDrugRepositoryImpl();
     private final UserRepository userRepository = new UserRepositoryImpl();
     private YearMonth expiryDate;
 

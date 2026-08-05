@@ -5,7 +5,7 @@ import ng.ourChemo.data.models.DispensedDrugs;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DispensedDrugsImpl implements DispensedDrugsRepository {
+public class DispensedDrugRepositoryImpl implements DispensedDrugsRepository {
     private int count;
     private List<DispensedDrugs> dispensedDrugsList = new ArrayList<>();
 
