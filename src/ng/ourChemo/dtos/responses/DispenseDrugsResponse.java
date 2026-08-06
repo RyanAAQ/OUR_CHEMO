@@ -3,6 +3,7 @@ package ng.ourChemo.dtos.responses;
 public class DispenseDrugsResponse {
     private int savedCount;
     private int totalAmount;
+    private int remainingQuantity;
     private String message;
 
 

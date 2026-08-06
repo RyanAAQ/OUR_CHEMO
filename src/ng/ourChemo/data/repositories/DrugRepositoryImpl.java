@@ -81,14 +81,14 @@ public class DrugRepositoryImpl implements DrugRepository {
     }
 
     @Override
-    public List<Drug> search(String query) {
+    public List<Drug> search(String word) {
         List<Drug> results = new ArrayList<>();
-        if (query == null || query.isEmpty()) return results;
-        String q = query.trim().toLowerCase();
+        if (word == null || word.isEmpty()) return results;
+        String w = word.trim().toLowerCase();
         for (Drug drug : drugs) {
-            boolean matchesName = drug.getName() != null && drug.getName().toLowerCase().contains(q);
-            boolean matchesGeneric = drug.getGenericName() != null && drug.getGenericName().toLowerCase().contains(q);
-            boolean matchesBrand = drug.getBrand() != null && drug.getBrand().toLowerCase().contains(q);
+            boolean matchesName = drug.getName() != null && drug.getName().toLowerCase().contains(w);
+            boolean matchesGeneric = drug.getGenericName() != null && drug.getGenericName().toLowerCase().contains(w);
+            boolean matchesBrand = drug.getBrand() != null && drug.getBrand().toLowerCase().contains(w);
             if (matchesName || matchesGeneric || matchesBrand) results.add(drug);
         }
         return results;

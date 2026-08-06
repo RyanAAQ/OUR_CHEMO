@@ -12,6 +12,6 @@ public interface DrugRepository {
     long count();
     Drug findById(long id);
     Drug findByName(String name);
-    List<Drug> search(String query);
+    List<Drug> search(String word);
     int size();
 }

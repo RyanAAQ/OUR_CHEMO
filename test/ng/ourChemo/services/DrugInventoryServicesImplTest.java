@@ -12,6 +12,8 @@ import ng.ourChemo.data.repositories.UserRepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ng.ourChemo.exceptions.InsufficientStockException;
 import ng.ourChemo.exceptions.MedicineNotFoundException;
 import ng.ourChemo.exceptions.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -184,13 +186,13 @@ class DrugInventoryServicesImplTest {
 
         UpdateDrugRequest request1 = new UpdateDrugRequest();
         request1.setId(response.getId());
-        request1.setName("Ibuprofen");
-        request1.setBrand("GSK");
+        request1.setName("Igbo");
+        request1.setBrand("YabaMade");
         request1.setPrice(800);
 
         UpdateDrugResponse updateResponse = drugService.updateDrug(request1);
-        assertEquals("Ibuprofen", updateResponse.getName());
-        assertEquals("GSK", updateResponse.getBrand());
+        assertEquals("Igbo", updateResponse.getName());
+        assertEquals("YabaMade", updateResponse.getBrand());
         assertEquals(800, updateResponse.getPrice());
     }
 
@@ -235,6 +237,33 @@ class DrugInventoryServicesImplTest {
     }
 
     @Test
+    void dispenseWithInsufficientStockThrowsException(){
+        registerAndLogin();
+        AddDrugRequest request = new AddDrugRequest();
+        request.setName("Amoxicillin");
+        request.setBrand("GSK");
+        request.setUnitPrice(800);
+        request.setPurchaseQuantity(5);
+        AddDrugResponse addResponse = drugService.addDrug(request);
+
+        Drug drug = new Drug();
+        drug.setId(addResponse.getId());
+
+        DispensedDrug item = new DispensedDrug();
+        item.setDrug(drug);
+        item.setBatchId(addResponse.getDrugBatch().getFirst().getId());
+        item.setQuantity(10);
+
+        DispenseDrugsRequest request2 = new DispenseDrugsRequest();
+        request2.setUsername("johndoe");
+        List<DispensedDrug> items = new ArrayList<>();
+        items.add(item);
+        request2.setItems(items);
+
+        assertThrows(InsufficientStockException.class, () -> drugService.dispenseDrugs(request2));
+    }
+
+    @Test
     void dispenseCorrectlyReducesTheStock() {
         registerAndLogin();
         AddDrugRequest request = new AddDrugRequest();
@@ -261,6 +290,7 @@ class DrugInventoryServicesImplTest {
         DispenseDrugsResponse response = drugService.dispenseDrugs(request2);
         assertEquals(1, response.getSavedCount());
         assertEquals(8000, response.getTotalAmount());
+        assertEquals(50, addResponse.getTotalQuantity() - response.getTotalAmount() / 800);
     }
 
     @Test
@@ -394,5 +424,18 @@ class DrugInventoryServicesImplTest {
         assertThrows(MedicineNotFoundException.class, () -> drugService.searchDrug(request1));
     }
 
+    @Test
+    void searchGenericNameOfDrugWithoutAWordThrowsException(){
+        registerAndLogin();
+        AddDrugRequest request = new AddDrugRequest();
+        request.setName("Emzor Paracetamol");
+        request.setGenericName("Paracetamol");
+        request.setBrand("Emzor");
+        request.setUnitPrice(500);
+        request.setPurchaseQuantity(100);
+        drugService.addDrug(request);
+        SearchDrugRequest request1 = new SearchDrugRequest();
 
+        assertThrows(IllegalArgumentException.class, () -> drugService.searchDrug(request1));
+    }
 }
