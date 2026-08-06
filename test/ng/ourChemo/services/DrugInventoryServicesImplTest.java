@@ -61,6 +61,7 @@ class DrugInventoryServicesImplTest {
         request.setName("Paracetamol");
         request.setBrand("Emzor");
         request.setUnitPrice(500);
+        request.setStrength("500mg");
         request.setPurchaseQuantity(100);
         AddDrugResponse response = drugService.addDrug(request);
         assertEquals(1, response.getDrugBatch().size());

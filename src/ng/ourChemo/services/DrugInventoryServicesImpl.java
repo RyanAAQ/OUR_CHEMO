@@ -27,7 +27,6 @@ import ng.ourChemo.exceptions.InsufficientStockException;
 import ng.ourChemo.exceptions.MedicineNotFoundException;
 import ng.ourChemo.exceptions.ValidationException;
 import ng.ourChemo.utils.Mapper;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -59,6 +58,7 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
         }
 
         Drug savedDrug = drugRepository.save(drugToSave);
+        YearMonth expiryDate;
 
         if (request.getPurchaseQuantity() > 0) {
             Batch batch = new Batch();
@@ -67,7 +67,12 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
             batch.setPurchaseQuantity(request.getPurchaseQuantity());
             batch.setQuantityLeft(request.getPurchaseQuantity());
             batch.setPurchaseDate(LocalDate.now());
-            YearMonth expiryDate = request.getExpiryDate() != null ? request.getExpiryDate() : YearMonth.now().plusMonths(1);
+            if(request.getExpiryDate() != null){
+                expiryDate = request.getExpiryDate();
+            }
+            else{
+                expiryDate = YearMonth.now().plusMonths(1);
+            }
             batch.setExpiryDate(expiryDate);
             batchRepository.save(batch);
 
@@ -155,7 +160,6 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
             throw new IllegalArgumentException("Dispensed drug list cannot be empty");
 
         int totalAmount = 0;
-        int remainingQuantity = 0;
 
         for (DispensedDrug item : items) {
             if (item == null)
@@ -183,7 +187,6 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
             totalAmount += item.getTotalPrice();
 
             drug.setQuantity(drug.getQuantity() - item.getQuantity());
-            remainingQuantity = drug.getQuantity();
             drugRepository.save(drug);
         }
 
@@ -196,7 +199,6 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
         DispenseDrugsResponse response = new DispenseDrugsResponse();
         response.setSavedCount(items.size());
         response.setTotalAmount(totalAmount);
-        response.setRemainingQuantity(remainingQuantity);
         response.setMessage("Dispensed " + items.size() + " item(s) successfully. Total: " + totalAmount);
         return response;
     }
