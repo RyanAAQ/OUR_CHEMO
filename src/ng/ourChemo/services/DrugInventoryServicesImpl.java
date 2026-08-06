@@ -202,8 +202,11 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
     public SearchDrugResponse searchDrug(SearchDrugRequest request) {
         if (request == null || request.getWord() == null || request.getWord().isEmpty())
             throw new IllegalArgumentException("Search query is required");
+        List<Drug> results = drugRepository.search(request.getWord());
+        if (results.isEmpty())
+            throw new MedicineNotFoundException("No medicines found matching: " + request.getWord());
         SearchDrugResponse response = new SearchDrugResponse();
-        response.setDrugs(drugRepository.search(request.getWord()));
+        response.setDrugs(results);
         return response;
     }
 }

@@ -5,6 +5,7 @@ public class DispenseDrugsResponse {
     private int totalAmount;
     private String message;
 
+
     public int getSavedCount() {
         return savedCount;
     }

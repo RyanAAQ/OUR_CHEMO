@@ -377,4 +377,22 @@ class DrugInventoryServicesImplTest {
         assertEquals(1, response.getDrugs().size());
         assertEquals("Paracetamol", response.getDrugs().getFirst().getGenericName());
     }
+
+    @Test
+    void searchGenericNameOfDrugThatDoesntExistsThrowsException(){
+        registerAndLogin();
+        AddDrugRequest request = new AddDrugRequest();
+        request.setName("Emzor Paracetamol");
+        request.setGenericName("Paracetamol");
+        request.setBrand("Emzor");
+        request.setUnitPrice(500);
+        request.setPurchaseQuantity(100);
+        drugService.addDrug(request);
+        SearchDrugRequest request1 = new SearchDrugRequest();
+        request1.setWord("Kara");
+
+        assertThrows(MedicineNotFoundException.class, () -> drugService.searchDrug(request1));
+    }
+
+
 }
