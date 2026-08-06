@@ -4,6 +4,7 @@ import ng.ourChemo.dtos.requests.*;
 import ng.ourChemo.dtos.responses.AddDrugResponse;
 import ng.ourChemo.dtos.responses.DispenseDrugsResponse;
 import ng.ourChemo.dtos.responses.SearchDrugResponse;
+import ng.ourChemo.dtos.responses.UpdateDrugResponse;
 import ng.ourChemo.data.models.Drug;
 import ng.ourChemo.data.models.DispensedDrug;
 import ng.ourChemo.data.repositories.DrugRepositoryImpl;
@@ -166,6 +167,31 @@ class DrugInventoryServicesImplTest {
         request.setId(999);
         request.setName("Ibuprofen");
         assertThrows(MedicineNotFoundException.class, () -> drugService.updateDrug(request));
+    }
+
+    @Test
+    void updateDrugWithCorrectInformationUpdatesTheDrug() {
+        registerAndLogin();
+        AddDrugRequest request = new AddDrugRequest();
+        request.setName("Paracetamol");
+        request.setBrand("Emzor");
+        request.setUnitPrice(500);
+        request.setPurchaseQuantity(100);
+        AddDrugResponse response = drugService.addDrug(request);
+        assertEquals(500, response.getUnitPrice());
+        assertEquals(100, response.getTotalQuantity());
+        assertEquals(1, response.getId());
+
+        UpdateDrugRequest request1 = new UpdateDrugRequest();
+        request1.setId(response.getId());
+        request1.setName("Ibuprofen");
+        request1.setBrand("GSK");
+        request1.setPrice(800);
+
+        UpdateDrugResponse updateResponse = drugService.updateDrug(request1);
+        assertEquals("Ibuprofen", updateResponse.getName());
+        assertEquals("GSK", updateResponse.getBrand());
+        assertEquals(800, updateResponse.getPrice());
     }
 
     @Test
