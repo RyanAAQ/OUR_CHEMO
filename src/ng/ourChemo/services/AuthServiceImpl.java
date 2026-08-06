@@ -16,7 +16,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 
     public AuthServiceImpl() {
-        this(new UserRepositoryImpl());
+        this.userRepository = UserRepositoryImpl.getInstance();
     }
 
     public AuthServiceImpl(UserRepository userRepository) {

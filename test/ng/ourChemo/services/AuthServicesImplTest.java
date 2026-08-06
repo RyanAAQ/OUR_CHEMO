@@ -21,7 +21,6 @@ class AuthServicesImplTest {
 
     @BeforeEach
     void setUp() {
-        user = new UserRepositoryImpl();
         authService = new AuthServiceImpl(user);
         request = new RegisterUserRequest();
         user.deleteAll();

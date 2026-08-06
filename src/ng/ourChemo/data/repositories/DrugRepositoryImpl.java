@@ -6,14 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrugRepositoryImpl implements DrugRepository {
+    private static final DrugRepositoryImpl INSTANCE = new DrugRepositoryImpl();
     private int nextId;
     private final List<Drug> drugs = new ArrayList<>();
 
+    private DrugRepositoryImpl() {}
+
+    public static DrugRepositoryImpl getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public Drug save(Drug drug) {
-        if (drug == null) {
-            throw new IllegalArgumentException("Drug cannot be null");
-        }
+        if (drug == null) throw new IllegalArgumentException("Drug cannot be null");
 
         if (drug.getId() == 0) {
             drug.setId(++nextId);
@@ -40,10 +45,13 @@ public class DrugRepositoryImpl implements DrugRepository {
 
     @Override
     public void delete(Drug drug) {
-        if (drug == null) {
-            return;
+        if (drug == null) return;
+        for (int i = 0; i < drugs.size(); i++) {
+            if (drugs.get(i).getId() == drug.getId()) {
+                drugs.remove(i);
+                return;
+            }
         }
-        drugs.removeIf(stored -> stored.getId() == drug.getId());
     }
 
     @Override
@@ -62,9 +70,7 @@ public class DrugRepositoryImpl implements DrugRepository {
 
     @Override
     public Drug findByName(String name) {
-        if (name == null || name.isEmpty()) {
-            return null;
-        }
+        if (name == null || name.isEmpty()) return null;
         String normalized = name.trim().toLowerCase();
         for (var drug : drugs) {
             if (drug.getName() != null && drug.getName().trim().toLowerCase().equals(normalized)) {

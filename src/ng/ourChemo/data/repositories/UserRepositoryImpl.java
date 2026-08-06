@@ -6,8 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepositoryImpl implements UserRepository {
+    private static final UserRepositoryImpl instance = new UserRepositoryImpl();
     private int nextId;
     private final List<User> users = new ArrayList<>();
+
+    private UserRepositoryImpl() {}
+
+    public static UserRepositoryImpl getInstance() {
+        return instance;
+    }
 
     @Override
     public User save(User user) {
@@ -40,10 +47,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(User user) {
-        if (user == null) {
-            return;
+        if (user == null) return;
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId() == user.getId()) {
+                users.remove(i);
+                return;
+            }
         }
-        users.removeIf(stored -> stored.getId() == user.getId());
     }
 
     @Override
@@ -62,9 +72,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User findByUsername(String username) {
-        if (username == null || username.isEmpty()) {
-            return null;
-        }
+        if (username == null || username.isEmpty()) return null;
         String normalized = username.trim().toLowerCase();
         for (var user : users) {
             if (user.getUsername() != null && user.getUsername().trim().toLowerCase().equals(normalized)) {

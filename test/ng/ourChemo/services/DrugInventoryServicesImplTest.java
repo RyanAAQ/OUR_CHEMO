@@ -2,13 +2,19 @@ package ng.ourChemo.services;
 
 import ng.ourChemo.dtos.requests.*;
 import ng.ourChemo.dtos.responses.AddDrugResponse;
+import ng.ourChemo.dtos.responses.DispenseDrugsResponse;
 import ng.ourChemo.dtos.responses.SearchDrugResponse;
+import ng.ourChemo.data.models.Drug;
+import ng.ourChemo.data.models.DispensedDrug;
+import ng.ourChemo.data.repositories.DrugRepositoryImpl;
+import ng.ourChemo.data.repositories.UserRepositoryImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 import ng.ourChemo.exceptions.MedicineNotFoundException;
 import ng.ourChemo.exceptions.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.YearMonth;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +25,8 @@ class DrugInventoryServicesImplTest {
 
     @BeforeEach
     void setUp() {
+        UserRepositoryImpl.getInstance().deleteAll();
+        DrugRepositoryImpl.getInstance().deleteAll();
         authService = new AuthServiceImpl();
         drugService = new DrugInventoryServicesImpl();
     }
@@ -201,16 +209,32 @@ class DrugInventoryServicesImplTest {
     }
 
     @Test
-    void dispenseCorrectlyReducesTheStock(){
+    void dispenseCorrectlyReducesTheStock() {
         registerAndLogin();
         AddDrugRequest request = new AddDrugRequest();
         request.setName("Amoxicillin");
         request.setBrand("GSK");
         request.setUnitPrice(800);
         request.setPurchaseQuantity(60);
+        AddDrugResponse addResponse = drugService.addDrug(request);
+
+        Drug drug = new Drug();
+        drug.setId(addResponse.getId());
+
+        DispensedDrug item = new DispensedDrug();
+        item.setDrug(drug);
+        item.setBatchId(addResponse.getDrugBatch().getFirst().getId());
+        item.setQuantity(10);
+
         DispenseDrugsRequest request2 = new DispenseDrugsRequest();
         request2.setUsername("johndoe");
+        List<DispensedDrug> items = new ArrayList<>();
+        items.add(item);
+        request2.setItems(items);
 
+        DispenseDrugsResponse response = drugService.dispenseDrugs(request2);
+        assertEquals(1, response.getSavedCount());
+        assertEquals(8000, response.getTotalAmount());
     }
 
     @Test

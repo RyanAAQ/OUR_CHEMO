@@ -7,7 +7,7 @@ import ng.ourChemo.data.models.Drug;
 import ng.ourChemo.data.models.User;
 import ng.ourChemo.data.repositories.BatchRepository;
 import ng.ourChemo.data.repositories.BatchRepositoryImpl;
-import ng.ourChemo.data.repositories.DispensedDrugRepositoryImpl;
+import ng.ourChemo.data.repositories.DispensedDrugsImpl;
 import ng.ourChemo.data.repositories.DispensedDrugsRepository;
 import ng.ourChemo.data.repositories.DrugRepository;
 import ng.ourChemo.data.repositories.DrugRepositoryImpl;
@@ -35,11 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrugInventoryServicesImpl implements DrugInventoryServices {
-    private final DrugRepository drugRepository = new DrugRepositoryImpl();
+    private final DrugRepository drugRepository = DrugRepositoryImpl.getInstance();
     private final BatchRepository batchRepository = new BatchRepositoryImpl();
-    private final DispensedDrugsRepository dispensedDrugsRepository = new DispensedDrugRepositoryImpl();
-    private final UserRepository userRepository = new UserRepositoryImpl();
-    private YearMonth expiryDate;
+    private final DispensedDrugsRepository dispensedDrugsRepository = new DispensedDrugsImpl();
+    private final UserRepository userRepository = UserRepositoryImpl.getInstance();
 
     @Override
     public AddDrugResponse addDrug(AddDrugRequest request) {
@@ -68,12 +67,7 @@ public class DrugInventoryServicesImpl implements DrugInventoryServices {
             batch.setPurchaseQuantity(request.getPurchaseQuantity());
             batch.setQuantityLeft(request.getPurchaseQuantity());
             batch.setPurchaseDate(LocalDate.now());
-            if(request.getExpiryDate() != null){
-                expiryDate = request.getExpiryDate();
-            }
-            else {
-                expiryDate = YearMonth.now().plusMonths(1);
-            }
+            YearMonth expiryDate = request.getExpiryDate() != null ? request.getExpiryDate() : YearMonth.now().plusMonths(1);
             batch.setExpiryDate(expiryDate);
             batchRepository.save(batch);
 
